@@ -1,11 +1,19 @@
 import { readTasks, saveTasks } from "./storage.js";
 
+// Work out the next short id: 1, 2, 3...
+export function getNextId(tasks) {
+  if (tasks.length === 0) {
+    return 1;
+  }
+  return Math.max(...tasks.map(task => task.id)) + 1;
+}
+
 // Add a new task
 export function addTask(title) {
   const tasks = readTasks();
 
   const newTask = {
-    id: Date.now(),
+    id: getNextId(tasks),
     title: title,
     completed: false,
     createdAt: new Date().toISOString()
