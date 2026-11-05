@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import { parseArgs } from "node:util";
+import chalk from "chalk";
 
 import {
   handleAdd,
@@ -11,30 +12,14 @@ import {
   handleImport
 } from "../src/commands.js";
 
-// Read command-line arguments
-const { values, positionals } = parseArgs({
-  options: {
-    help: {
-      type: "boolean",
-      short: "h"
-    },
-    version: {
-      type: "boolean",
-      short: "v"
-    }
-  },
-  allowPositionals: true
-});
-
-// Show help information
-if (values.help) {
+function showHelp() {
   console.log(`
-Task Manager CLI
+${chalk.bold("Task Manager CLI")}
 
-Usage:
+${chalk.bold("Usage:")}
   taskcli <command> [options]
 
-Commands:
+${chalk.bold("Commands:")}
   add <title>       Add a new task
   list              Display all tasks
   complete <id>     Complete a task
@@ -42,13 +27,31 @@ Commands:
   stats             Display task statistics
   import            Import tasks from API
 
-Options:
+${chalk.bold("Options:")}
   -h, --help        Show help
   -v, --version     Show version
-  `);
-
-  process.exit(0);
+`);
 }
+
+// Read command-line arguments; show a friendly error for unknown options
+let parsed;
+try {
+  parsed = parseArgs({
+    options: {
+      help: { type: "boolean", short: "h" },
+      version: { type: "boolean", short: "v" }
+    },
+    allowPositionals: true
+  });
+} catch (error) {
+  console.log(chalk.red("Error:"), error.message.split(".")[0] + ".");
+  console.log(chalk.dim("Hint: run taskcli --help"));
+  process.exit(1);
+}
+
+const { values, positionals } = parsed;
+const command = positionals[0];
+const argument = positionals.slice(1);
 
 // Show application version
 if (values.version) {
@@ -56,9 +59,11 @@ if (values.version) {
   process.exit(0);
 }
 
-// Get command and arguments
-const command = positionals[0];
-const argument = positionals.slice(1);
+// Show help when asked, or when no command is given
+if (values.help || !command) {
+  showHelp();
+  process.exit(0);
+}
 
 // Execute selected command
 switch (command) {
@@ -87,5 +92,7 @@ switch (command) {
     break;
 
   default:
-    console.log("Unknown command. Use --help to see available commands.");
+    console.log(chalk.red("Error:"), `Unknown command "${command}".`);
+    console.log(chalk.dim("Hint: run taskcli --help"));
+    process.exit(1);
 }

@@ -3,17 +3,26 @@
   "version": "1.0.0",
   "description": "A command-line task manager built with Node.js",
   "type": "module",
-"bin": {
-  "taskcli": "./bin/index.js"
-},
-  "scripts": {
-    "start": "node bin/index.js"
+  "bin": {
+    "taskcli": "./bin/index.js"
   },
-  "keywords": [
-    "task",
-    "manager",
-    "cli"
-  ],
+  "engines": {
+    "node": ">=18.3"
+  },
+  "scripts": {
+    "start": "node bin/index.js",
+    "dev": "node --watch bin/index.js",
+    "format": "prettier --write ."
+  },
+  "keywords": ["task", "manager", "cli"],
   "author": "belise,olga",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "chalk": "^6.0.1",
+    "cli-table3": "^0.6.5",
+    "ora": "^10.0.0"
+  },
+  "devDependencies": {
+    "prettier": "^3.9.10"
+  }
 }
